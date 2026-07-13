@@ -27,6 +27,8 @@ pip install -e .
 uvicorn vibesec.api:app --host 0.0.0.0 --port 7860
 ```
 
+Open `http://localhost:7860` to use the web interface.
+
 Then send an authorized source archive:
 
 ```bash
