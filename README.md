@@ -7,6 +7,7 @@ VibeSec performs deterministic, local source-code checks and produces an actiona
 ## Current checks
 
 - Exposed API keys and private keys
+- Exposed AWS access key IDs and secret access keys
 - Dangerous command execution
 - Potential SQL injection
 - Unsafe HTML rendering / DOM XSS

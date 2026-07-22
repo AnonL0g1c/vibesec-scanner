@@ -40,7 +40,7 @@ LANDING_PAGE = """<!doctype html>
   <h1>Ship fast.<br><span>Scan first.</span></h1>
   <p class="lead">Upload an authorized source-code ZIP. VibeSec checks it locally for exposed secrets, injection risks, unsafe rendering and dangerous configuration.</p>
   <section class="card">
-    <label class="drop" for="file"><strong id="filename">Choose a .zip project</strong><br><small>Maximum 10 MB Â· source code only</small></label>
+    <label class="drop" for="file"><strong id="filename">Choose a .zip project</strong><br><small>Maximum 10 MB &middot; source code only</small></label>
     <input id="file" type="file" accept=".zip">
     <button id="scan" disabled>Run security scan</button><div id="status"></div>
     <div id="result"><div class="score" id="score"></div><div class="grid" id="summary"></div><div id="findings"></div></div>
@@ -49,10 +49,10 @@ LANDING_PAGE = """<!doctype html>
 </main><script>
 const file=document.querySelector('#file'), button=document.querySelector('#scan'), status=document.querySelector('#status'), result=document.querySelector('#result');
 file.onchange=()=>{document.querySelector('#filename').textContent=file.files[0]?.name||'Choose a .zip project';button.disabled=!file.files.length};
-button.onclick=async()=>{button.disabled=true;result.style.display='none';status.textContent='Scanningâ¦';const body=new FormData();body.append('file',file.files[0]);
+button.onclick=async()=>{button.disabled=true;result.style.display='none';status.textContent='Scanning\u2026';const body=new FormData();body.append('file',file.files[0]);
 try{const response=await fetch('/scan',{method:'POST',body});const data=await response.json();if(!response.ok)throw new Error(data.detail||'Scan failed');
 document.querySelector('#score').textContent=data.score+'/100';document.querySelector('#summary').innerHTML=Object.entries(data.summary).map(([k,v])=>`<div class="metric ${k}"><b>${v}</b>${k}</div>`).join('');
-document.querySelector('#findings').innerHTML=data.findings.length?data.findings.map(f=>`<article class="finding"><h3 class="${f.severity}">${f.severity.toUpperCase()} Â· ${f.title}</h3><p>${f.file}:${f.line} Â· ${f.rule_id}</p><code>${escapeHtml(f.evidence)}</code><p>${f.recommendation}</p></article>`).join(''):'<p>No matching issues found. This is not a guarantee of security.</p>';
+document.querySelector('#findings').innerHTML=data.findings.length?data.findings.map(f=>`<article class="finding"><h3 class="${f.severity}">${f.severity.toUpperCase()} &middot; ${f.title}</h3><p>${f.file}:${f.line} &middot; ${f.rule_id}</p><code>${escapeHtml(f.evidence)}</code><p>${f.recommendation}</p></article>`).join(''):'<p>No matching issues found. This is not a guarantee of security.</p>';
 result.style.display='block';status.textContent=`${data.files_scanned} files scanned`;}
 catch(error){status.textContent=error.message}finally{button.disabled=false}};
 function escapeHtml(value){const e=document.createElement('div');e.textContent=value;return e.innerHTML}
