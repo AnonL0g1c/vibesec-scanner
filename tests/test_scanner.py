@@ -24,3 +24,31 @@ def test_ignores_dependency_directories(tmp_path: Path) -> None:
     report = scan_directory(tmp_path)
     assert report["files_scanned"] == 0
     assert report["findings"] == []
+
+
+def test_detects_aws_credentials(tmp_path: Path) -> None:
+    (tmp_path / ".env").write_text(
+        "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\n"
+        "AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n",
+        encoding="utf-8",
+    )
+    report = scan_directory(tmp_path)
+    ids = {finding["rule_id"] for finding in report["findings"]}
+    assert {"AWS001", "AWS002"} <= ids
+    evidence = "\n".join(finding["evidence"] for finding in report["findings"])
+    assert "AKIAIOSFODNN7EXAMPLE" not in evidence
+    assert "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" not in evidence
+    assert "AKIA****MPLE" in evidence
+    assert "wJal****EKEY" in evidence
+
+
+def test_does_not_flag_aws_placeholders(tmp_path: Path) -> None:
+    (tmp_path / ".env").write_text(
+        "AWS_ACCESS_KEY_ID=your_access_key_here\n"
+        "AWS_SECRET_ACCESS_KEY=your_secret_key_here\n",
+        encoding="utf-8",
+    )
+    report = scan_directory(tmp_path)
+    assert not {"AWS001", "AWS002"} & {
+        finding["rule_id"] for finding in report["findings"]
+    }
