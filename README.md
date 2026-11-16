@@ -36,6 +36,51 @@ Then send an authorized source archive:
 curl -F "file=@project.zip" http://localhost:7860/scan
 ```
 
+## Example
+
+Scanning a small Flask app with a hard-coded token, SQL built from user input, a shell call and debug mode:
+
+```bash
+python -m vibesec.cli scan ./demo
+```
+
+```json
+{
+  "scanner": "VibeSec",
+  "score": 48,
+  "files_scanned": 1,
+  "summary": { "critical": 0, "high": 3, "medium": 1, "low": 0 },
+  "findings": [
+    {
+      "rule_id": "SEC002",
+      "title": "Likely API token committed",
+      "severity": "high",
+      "file": "app.py",
+      "line": 4,
+      "evidence": "OPENAI_API_KEY = \"sk-p****3456\"",
+      "recommendation": "Revoke the token and inject it through environment variables or a secret manager."
+    },
+    {
+      "rule_id": "INJ002",
+      "title": "Potential SQL string interpolation",
+      "severity": "high",
+      "file": "app.py",
+      "line": 7,
+      "recommendation": "Use parameterized queries; never concatenate user-controlled values into SQL."
+    }
+  ]
+}
+```
+
+Secrets are masked in the report (`sk-p****3456`), so reports can be shared safely.
+
+## Running the tests
+
+```bash
+pip install -e . pytest
+python -m pytest -q
+```
+
 ## Safety
 
 Only scan code you own or are explicitly authorized to assess. Findings are leads for validation, not proof that a vulnerability is exploitable.
